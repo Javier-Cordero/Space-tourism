@@ -1,15 +1,10 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useApi } from "../hooks/useApi"
 export const Destination = () => {
-  const [select, setSelect] = useState(null)
-  const handleD = (destination) => { setSelect(destination) }
   const { destinations } = useApi()
-  useEffect(()=>{
-    if(destinations.length>0){
-      const mars = destinations.find(d => d.name === 'Mars') || destinations[0]
-      if(mars) setSelect(mars)
-    }
-  },[destinations])
+  const [destinationPage, setDestinationPage] = useState(1)
+  const destinationItem = destinations[destinationPage - 1]
+  const handlePage = (pageNumber) => { setDestinationPage(pageNumber) }
   return (
     <div className="relative">
       <img src="/destination/background-destination-desktop.jpg" alt="imagen de fondo" className="w-screen h-screen" />
@@ -17,34 +12,25 @@ export const Destination = () => {
         <span className="font-bold text-slate-400">01</span>
         <span className="text-white">PICK YOUR DESTINATION</span>
       </div>
-      <div className="flex absolute top-[200px] right-44 text-white">
-        {
-          destinations.map((destination, item) => (
-            <div key={item} onClick={() => handleD(destination)} className="flex items-center justify-around px-5">
-              <h2 className="text-lg font-normal cursor-pointer">{destination.name}</h2>
+      {
+        destinationItem && (
+          <div>
+            <div className="flex justify-between w-64 absolute top-32 left-[63%]">
+              {
+                destinations.map((num,item) => (<button key={item} onClick={() => handlePage(item+1)} className={`${item+1 === destinationPage ? 'border-b-2' : ''} py-2 uppercase text-white`}>{num.name}</button>))
+              }
             </div>
-          ))
-        }
-      </div>
-      {select && (
-        <div className="absolute bottom-20 right-44 grid gap-5 text-white w-80">
-          <span className="text-7xl">{select.name}</span>
-          <p>{select.description}</p>
-          <div className="flex border-t-2 pt-2 justify-between">
-            <div className="grid">
-              <span className="text-sm">AVG DISTANCE</span>
-              <span className="uppercase text-2xl">{select.distance}</span>
-            </div>
-            <div className="grid">
-              <span className="text-sm">EST TRAVEL TIME</span>
-              <span className="uppercase text-2xl">{select.travel}</span>
-            </div>
+            <span className="absolute top-56 left-[63%] font-normal text-9xl text-white">{destinationItem.name}</span>
+            <p className="absolute top-[55%] left-[63%] w-96 text-slate-400">{destinationItem.description}</p>
+            <div className="h-1 w-96 bg-slate-400 absolute bottom-40 left-[63%]"></div>
+            <span className="absolute bottom-32 left-[63%] font-medium text-slate-400">AVG DISTANCE</span>
+            <span className="uppercase text-2xl absolute bottom-20 left-[63%] font-medium text-white">{destinationItem.distance}</span>
+            <span className="absolute bottom-32 left-[80%] font-medium text-slate-400">EST. TRAVEL TIME</span>
+            <span className="uppercase text-2xl absolute bottom-20 left-[80%] text-white">{destinationItem.travel}</span>
+            <img src={destinationItem.images.png} alt="imagen de destino" className="w-80 absolute top-56 left-36" />
           </div>
-          <div className="absolute left-[-660px] top-[-80px]">
-            <img src={select.images.png} alt="imagen del planeta" className="w-80" />
-          </div>
-        </div>
-      )}
+        )
+      }
     </div>
   )
 }
