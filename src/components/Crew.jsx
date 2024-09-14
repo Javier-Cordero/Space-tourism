@@ -1,31 +1,37 @@
 import { useState } from "react"
 import { useApi } from "../hooks/useApi"
+import useSize from "../hooks/useSize"
 export const Crew = () => {
     const { crew } = useApi()
-    const [crewPage, setCrewPage] = useState(1)
-    const crewItem = crew[crewPage - 1]
-    const Page = crew.length
-    const number = Array.from({ length: Page }, (_, index) => index + 1);
-    const handlePage = (pageNumber) => { setCrewPage(pageNumber) }
+    const { width } = useSize()
+    const [page, setPage] = useState(1)
+    const item = crew[page - 1]
+    const number = Array.from({ length: crew.length }, (_, index) => index + 1);
+    const handlePage = (pageNumber) => { setPage(pageNumber) }
     return (
         <div className="relative">
-            <img src="/crew/background-crew-desktop.jpg" alt="imagen de fondo" className="w-screen h-screen" />
-            <div className="absolute top-32 left-36 text-lg flex gap-5">
-                <span className="font-bold text-slate-400">02</span>
+            <div className='bg-cover bg-center bg-[url(/crew/background-crew-mobile.jpg)] sm:bg-[url(/crew/background-crew-tablet.jpg)] lg:bg-[url(/crew/background-crew-desktop.jpg)] w-screen lg:h-screen'></div>
+            <div className="absolute lg:top-[20%] lg:left-[11%] text-[20px] font-bold flex gap-5">
+                <span className="text-slate-400">02</span>
                 <span className="text-white">MEET YOUR CREW</span>
             </div>
             {
-                crewItem && (
+                item && (
                     <div>
-                        <span className="text-4xl text-slate-500 uppercase font-extralight absolute top-52 left-32">{crewItem.role}</span>
-                        <span className="text-6xl text-white uppercase absolute top-64 left-32">{crewItem.name}</span>
-                        <p className="text-white w-[390px] absolute top-96 left-32">{crewItem.bio}</p>
-                        <div className="flex justify-around w-[200px] pt-20 absolute bottom-10 left-32">
+                        <span className="absolute lg:top-[30%] lg:left-[11%] text-4xl text-slate-500 uppercase font-extralight">{item.role}</span>
+                        <span className="absolute lg:top-[37%] lg:left-[11%] text-6xl text-white uppercase">{item.name}</span>
+                        <p className="absolute lg:top-[55%] lg:left-[11%] text-white w-[390px]">{item.bio}</p>
+                        {/* <img src={item.images.png} alt="imagen de crew" className="absolute lg:bottom-0 lg:left-[65%] lg:w-[25%]" /> */}
+                        {
+                            width > 1024 ? <img src={item.images.portrait} alt="imagen de referencia" className="absolute lg:bottom-[7%] lg:right-0" /> :
+                                width < 1024 && width > 768 ? <img src={item.images.landscape} alt="imagen de referencia" className="absolute lg:bottom-[7%] lg:right-0" /> :
+                                    <img src={item.images.landscape} alt="imagen de referencia" className="absolute lg:bottom-[7%] lg:right-0" />
+                        }
+                        <div className="absolute lg:top-[80%] lg:left-[11%] flex justify-around w-[200px] pt-20">
                             {
-                                number.map(num => (<button key={num} onClick={() => handlePage(num)} className={`size-3 rounded-full ${num === crewPage ? 'bg-white' : 'bg-slate-600'}`}></button>))
+                                number.map(num => (<button key={num} onClick={() => handlePage(num)} className={`size-3 rounded-full ${num === page ? 'bg-white' : 'bg-slate-600'}`}></button>))
                             }
                         </div>
-                        <img src={crewItem.images.png} alt="imagen de crew" className="w-80 absolute bottom-0 right-36" />
                     </div>
                 )
             }
